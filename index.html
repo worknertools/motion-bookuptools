@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Type play</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boockup Pro - Ultra HD Seamless Edition</title>
+    <style>
+        :root { 
+            --accent: #000000; 
+            --bg-main: #e6e6e6; 
+            --panel-bg: #1f1f1f; 
+            --card-bg: transparent; 
+            --text-p: #999999; 
+            --text-s: #666666; 
+            --border: #333333; 
+            --gold: #d4af37;
+            --radius: 0px; 
+            --slider-track: #555555; 
+        }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; 
+            color: var(--text-p); background: var(--bg-main); overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        #app { display: flex; width: 100vw; height: 100vh; }
+        main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 30px; position: relative; }
+        #canvas-container {
+            width: auto; height: 90vh; aspect-ratio: 3 / 4; position: relative;
+            background: transparent; border-radius: 0; overflow: hidden;
+            cursor: default; box-shadow: none; border: none;
+        }
+        #canvas-container canvas { display: block; width: 100%; height: 100%; }
+aside {
+width: 400px; height: 100%; background: var(--panel-bg);
+border-left: 1px solid var(--border);
+display: flex; flex-direction: column;
+z-index: 10; overflow-y: auto; scrollbar-width: none;
+}
+aside::-webkit-scrollbar { display: none; }
+.card {
+margin: 0; padding: 12px 14px;
+border-bottom: 1px solid var(--border);
+background: var(--card-bg);
+width: 100%; box-sizing: border-box;
+}
+.card-title {
+font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+color: #ffffff; margin-bottom: 8px;
+display: flex; justify-content: space-between; align-items: center;
+}
+.row { display: flex; flex-direction: column; gap: 0px; margin-bottom: 8px; }
+.row.inline { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 4px; }
+.row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+.row-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.label-group {
+display: flex; justify-content: space-between; align-items: center;
+margin-bottom: 3px; height: 18px;
+}
+label { font-size: 13px; font-weight: 600; color: var(--text-p); white-space: nowrap; }
+.val-display {
+font-size: 11px; font-family: "SF Mono", monospace;
+color: #ffffff; font-weight: 900;
+background: transparent; padding: 0; min-width: 24px; text-align: right;
+}
+.upload-info {
+    display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.05); 
+    padding: 2px 6px; border: 1px solid var(--border); 
+    max-width: 110px;
+}
+.upload-name { 
+    font-size: 10px; color: #fff; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    flex: 1;
+}
+.upload-reset { cursor: pointer; color: var(--text-s); font-weight: bold; margin-left: 2px; }
+.mm-container { display: flex; align-items: center; gap: 3px; margin-left: 6px; }
+.mm-input {
+width: 32px; height: 18px;
+background: transparent !important;
+border: 1px solid #444 !important;
+border-radius: 0px;
+color: #ffffff !important;
+font-family: "SF Mono", "Consolas", monospace;
+font-size: 12px;
+font-weight: 900;
+text-align: center;
+padding: 0;
+outline: none !important;
+box-shadow: none !important;
+transition: none !important;
+-webkit-font-smoothing: antialiased;
+}
+.mm-input:focus {
+background: transparent !important;
+border: 1px solid #444 !important;
+outline: none !important;
+}
+input[type="range"] {
+-webkit-appearance: none; width: 100%; height: 14px; background: transparent; outline: none; margin: 0;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+width: 100%; height: 1px; background: var(--slider-track);
+}
+input[type="range"]::-webkit-slider-thumb {
+-webkit-appearance: none; width: 10px; height: 10px;
+background: #cccccc; border-radius: 50%; cursor: pointer; border: none; margin-top: -4.5px;
+}
+input[type="text"], select {
+border: 1px solid var(--border); padding: 3px 6px; font-size: 11px;
+background: transparent; color: var(--text-p); outline: none; font-weight: 500;
+}
+select option { background: var(--panel-bg); color: var(--text-p); }
+input[type="color"] {
+-webkit-appearance: none;
+-moz-appearance: none;
+appearance: none;
+width: 12px; height: 12px; cursor: pointer; background: none; padding: 0;
+border: 1px solid rgba(255,255,255,0.2); border-radius: 50% !important;
+overflow: hidden; flex-shrink: 0; display: inline-block; vertical-align: middle;
+box-sizing: border-box; box-shadow: 0 0 0 1px rgba(0,0,0,0.5); margin: 0 2px;
+}
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; border-radius: 50%; }
+input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+input[type="color"]::-moz-color-swatch { border: none; border-radius: 50%; }
+.upload-icon { width: 10px; height: 10px; flex-shrink: 0; }
+.btn-upload {
+display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 4px 8px;
+background: transparent; border: 1px solid var(--border);
+font-size: 11px; font-weight: 600; color: var(--text-p); cursor: pointer;
+}
+.btn-upload:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.play-btn {
+width: 24px; height: 24px;
+display: flex; align-items: center; justify-content: center;
+border: none;
+background: transparent;
+cursor: pointer;
+font-size: 14px;
+font-weight: bold;
+color: var(--text-p);
+padding: 0;
+transition: color 0.2s;
+}
+.play-btn:hover { color: #fff; background: transparent; }
+.footer { padding: 12px 14px 40px 14px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--border); }
+.export-title { font-size: 11px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
+.footer-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-primary { flex: 1; padding: 12px; background: #fff; color: #000; border: none; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; min-width: 80px; }
+.btn-primary:hover { background: #ddd; }
+#ctx-menu {
+position: fixed; display: none; background: #fff; border: none;
+z-index: 10000; width: 150px; overflow: hidden; box-shadow: none;
+}
+#ctx-menu div {
+padding: 10px 12px; font-size: 12px; font-weight: 500; cursor: pointer;
+border-bottom: 1px solid #f0f0f0; color: #333;
+display: flex; justify-content: space-between; align-items: center;
+}
+#ctx-menu div:last-child { border-bottom: none; }
+#ctx-menu div:hover { background: #000; color: #fff; }
+#ctx-menu .copy-label { font-size: 10px; font-weight: 800; opacity: 0.6; }
+.icon-btn {
+width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border);
+background: transparent; color: var(--text-p); cursor: pointer;
+display: flex; align-items: center; justify-content: center; font-size: 10px;
+}
+.icon-btn.active { background: #fff; color: #000; border-color: #fff; }
+.tag-text-btn { cursor: pointer; color: var(--text-s); }
+.tag-text-btn:hover { color: #fff; }
+.tag-text-btn.active { color: #fff; font-weight: 900; text-decoration: none; }
+#halfCoverPanel {
+background: rgba(255,255,255,0.05); padding: 8px; margin-top: 4px; margin-bottom: 4px;
+border-left: none; display: none;
+}
+#progressOverlay {
+display: none; position: absolute; bottom: 80px; left: 0; width: 100%;
+z-index: 9999; justify-content: center; align-items: center;
+pointer-events: none;
+}
+.progress-content {
+display: flex; flex-direction: column; width: 480px;
+}
+.progress-text-row {
+display: flex; justify-content: space-between; align-items: flex-end;
+margin-bottom: 8px; color: #ffffff; font-family: "SF Mono", monospace;
+font-size: 10px; font-weight: 900;
+}
+.progress-bar-container {
+width: 100%; height: 1px; background: rgba(255,255,255,0.25);
+position: relative; overflow: hidden;
+}
+#progressBar {
+width: 0%; height: 100%; background: #ffffff;
+transition: none;
+}
+#progressLabel { letter-spacing: 2px; text-transform: uppercase; }
+#progressValue { letter-spacing: 1px; }
+.rope-text-toggle { cursor: pointer; font-size: 11px; font-weight: bold; color: var(--text-s); }
+.rope-text-toggle.active { color: #fff; }
+</style>
+</head>
+<body>
+<svg style="display:none">
+    <symbol id="icon-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="17 8 12 3 7 8"></polyline>
+        <line x1="12" x1="12" y1="3" x2="12" y2="15"></line>
+    </symbol>
+    <symbol id="icon-dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" x1="12" y1="15" x2="12" y2="3"></line>
+    </symbol>
+</svg>
+<video id="bgVideoElement" loop muted playsinline crossorigin="anonymous" style="display:none;"></video>
+<div id="app">
+    <main id="main-stage">
+        <div id="canvas-container">
+            <div id="progressOverlay">
+                <div class="progress-content">
+                    <div class="progress-text-row">
+                        <div id="progressLabel">Downloading</div>
+                        <div id="progressValue">0%</div>
+                    </div>
+                    <div class="progress-bar-container"><div id="progressBar"></div></div>
+                </div>
+            </div>
+        </div>
+        <div id="ctx-menu">
+            <div onclick="copyCanvasImageHD()">复制高清图片 <span class="copy-label">Copy</span></div>
+            <div onclick="downloadCanvasImageHD()">下载图片文件 <svg width="12" height="12"><use href="#icon-dl"/></svg></div>
+        </div>
+    </main>
+    <aside id="control-panel">
+        <div class="card">
+            <div class="card-title">
+                封面定制 Appearance
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:3px;">
+                        <span style="font-size:10px; color:var(--text-s); font-weight:normal; text-transform:none;">整体色彩</span>
+                        <input type="color" id="allCoverColor" value="#ffffff" oninput="updateAllCovers(this.value)" title="同步封面与封底颜色">
+                    </div>
+                    <select id="rotMode" onchange="window.requestUpdateBook()" style="height: 20px; font-size: 10px; width: 120px; border-color: var(--border);">
+                        <option value="Y" selected>水平旋转 (Y轴)</option>
+                        <option value="Z">垂直旋转 (Z轴)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row-grid">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <label>封面</label>
+                    <div style="display:flex; gap:4px; align-items:center;">
+                        <input type="color" id="fCoverColor" value="#ffffff" oninput="updateColorUI('fCoverColor', this.value)">
+                        <div id="u_front" style="flex:1;"><button class="btn-upload" style="width:100%;" onclick="openFile('fCoverImg')"><svg class="upload-icon"><use href="#icon-up"/></svg> 上传文件</button></div>
+                        <div id="info_front" class="upload-info" style="display:none"><span class="upload-name" id="name_front"></span><span class="upload-reset" onclick="resetFile('front')">×</span></div>
+                        <input type="file" id="fCoverImg" style="display:none" accept="image/*,video/*,.svg" onchange="handleImageUpload(event, 'front')">
+                        <button id="btnHalfCover" class="icon-btn" onclick="toggleHalfCover()" title="小封面/腰封"><span style="font-weight:900; font-size:9px;">½</span></button>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <label>封底</label>
+                    <div style="display:flex; gap:4px; align-items:center;">
+                        <input type="color" id="bCoverColor" value="#ffffff" oninput="updateColorUI('bCoverColor', this.value)">
+                        <div id="u_back" style="flex:1;"><button class="btn-upload" style="width:100%;" onclick="openFile('bCoverImg')"><svg class="upload-icon"><use href="#icon-up"/></svg> 上传文件</button></div>
+                        <div id="info_back" class="upload-info" style="display:none"><span class="upload-name" id="name_back"></span><span class="upload-reset" onclick="resetFile('back')">×</span></div>
+                        <input type="file" id="bCoverImg" style="display:none" accept="image/*,video/*,.svg" onchange="handleImageUpload(event, 'back')">
+                    </div>
+                </div>
+            </div>
+            <div id="halfCoverPanel">
+                <div class="row inline">
+                    <label>小封面设置</label>
+                    <div style="display:flex; gap:4px; align-items:center;">
+                        <div id="u_hc"><button class="btn-upload" onclick="openFile('hcCoverImg')"><svg class="upload-icon"><use href="#icon-up"/></svg> 上传文件</button></div>
+                        <div id="info_hc" class="upload-info" style="display:none"><span class="upload-name" id="name_hc"></span><span class="upload-reset" onclick="resetFile('hc')">×</span></div>
+                        <input type="file" id="hcCoverImg" style="display:none" accept="image/*,video/*,.svg" onchange="handleHalfCoverUpload(event)">
+                        <input type="color" id="hcColor" value="#cccccc" oninput="updateColorUI('hcColor', this.value)">
+                    </div>
+                </div>
+                <div class="row-grid-3">
+                    <div class="row">
+                        <div class="label-group"><label>宽度</label><div class="mm-container"><span class="val-display" id="v-hcWidth">50%</span><input type="text" id="mm_hcWidth" class="mm-input" onchange="setSliderFromMM('hcWidth', this.value)"></div></div>
+                        <input type="range" id="hcWidth" min="10" max="100" value="50" oninput="updateUIVal(this);requestUpdateBook()">
+                    </div>
+                    <div class="row">
+                        <div class="label-group"><label>高度</label><div class="mm-container"><span class="val-display" id="v-hcHeight">100%</span><input type="text" id="mm_hcHeight" class="mm-input" onchange="setSliderFromMM('hcHeight', this.value)"></div></div>
+                        <input type="range" id="hcHeight" min="10" max="100" value="100" oninput="updateUIVal(this);requestUpdateBook()">
+                    </div>
+                    <div class="row">
+                        <div class="label-group"><label>对齐</label></div>
+                        <select id="hcAlign" onchange="requestUpdateBook()" style="height:18px; padding:0; font-size:10px;">
+                            <option value="top">顶部对齐</option>
+                            <option value="center" selected>居中</option>
+                            <option value="bottom">底部对齐</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row inline" style="margin-top:8px;">
+                <div style="display:flex; align-items:center; gap:8px; width:100%;">
+                    <label id="rotLabel" style="flex:0 0 auto;">播放进度</label>
+                    <input type="range" id="rotSpeed" min="0" max="100" step="0.01" value="0" style="flex:1; cursor: pointer;" oninput="updateUIVal(this)">
+                    <span class="val-display" id="v-rotSpeed" style="flex:0 0 110px; text-align:right;">0.00s / 17.44s</span>
+                    <button id="playPauseBtn" class="play-btn" onclick="toggleRotation()">❙❙</button>
+                </div>
+            </div>
+            <div class="row inline" style="background: rgba(255,255,255,0.05); padding: 6px 8px; margin-top: 5px; margin-bottom: 5px; border: 1px solid var(--border);">
+                <label style="font-weight:700; color:#fff;">纸张选择</label>
+                <select id="takeoPreset" onchange="applyTakeoPreset()" style="width: 130px; border-color: var(--border);">
+                    <option value="custom">-- 自由调整 --</option>
+                    <option value="bordeaux">BORDEAUX (深红绒感)</option>
+                    <option value="peacock">PEACOCK (孔雀蓝砂)</option>
+                    <option value="ecru">ECRU (原色纤维)</option>
+                    <option value="nt_raschel">NT RASCHEL</option>
+                    <option value="tant">TANT</option>
+                    <option value="pachica">PACHICA</option>
+                    <option value="mermaid">MERMAID</option>
+                    <option value="satogami">SATOGAMI</option>
+                    <option value="re_feel">RESI-FEEL</option>
+                </select>
+            </div>
+            <div class="row" style="margin-top:2px;">
+                <div class="label-group"><label>纹理深度</label><span class="val-display" id="v-texStrength">40</span></div>
+                <input type="range" id="texStrength" min="0" max="500" value="40" oninput="updateUIVal(this); updateTextureDepthLive(this.value)">
+                <input type="hidden" id="fiberDensity" value="60">
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">
+                书籍参数 Dimensions
+                <div style="display:flex; gap:8px; align-items:center; font-weight: normal; text-transform: none;">
+                    <span style="font-size:10px; color:var(--text-s)">书芯配色</span>
+                    <input type="color" id="coreColor" value="#ffffff" oninput="updateColorUI('coreColor', this.value)">
+                </div>
+            </div>
+            <div class="row-grid">
+                <div class="row">
+                    <div class="label-group"><label>高度</label><div class="mm-container"><span class="val-display" id="v-bookLen">5.8</span><input type="text" id="mm_bookLen" class="mm-input" onchange="setSliderFromMM('bookLen', this.value)"></div></div>
+                    <input type="range" id="bookLen" min="3" max="10" step="0.1" value="5.8" oninput="updateUIVal(this);requestUpdateBook()">
+                </div>
+                <div class="row">
+                    <div class="label-group"><label>宽度</label><div class="mm-container"><span class="val-display" id="v-bookWidth">4.0</span><input type="text" id="mm_bookWidth" class="mm-input" onchange="setSliderFromMM('bookWidth', this.value)"></div></div>
+                    <input type="range" id="bookWidth" min="2" max="8" step="0.1" value="4.0" oninput="updateUIVal(this);requestUpdateBook()">
+                </div>
+            </div>
+            <div class="row-grid">
+                <div class="row">
+                    <div class="label-group"><label>厚度</label><div class="mm-container"><span class="val-display" id="v-bookThick">0.2</span><input type="text" id="mm_bookThick" class="mm-input" onchange="setSliderFromMM('bookThick', this.value)"></div></div>
+                    <input type="range" id="bookThick" min="0.05" max="1.0" step="0.01" value="0.2" oninput="updateUIVal(this);requestUpdateBook()">
+                </div>
+                <div class="row">
+                    <div class="label-group"><label>书口斜率</label><div class="mm-container"><span class="val-display" id="v-bookSlope">0.00</span><input type="text" id="mm_bookSlope" class="mm-input" onchange="setSliderFromMM('bookSlope', this.value)"></div></div>
+                    <input type="range" id="bookSlope" min="0" max="1" step="0.01" value="0.00" oninput="updateUIVal(this);requestUpdateBook()">
+                </div>
+            </div>
+            <div class="row inline">
+                <label style="color:#ffffff;">细节配色</label>
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <div style="display:flex; gap:3px; align-items:center;">
+                        <span style="font-size:11px; color:var(--text-s)">绳子</span>
+                        <input type="color" id="ropeColor" value="#3b82f6" oninput="updateColorUI('ropeColor', this.value)">
+                    </div>
+                    <div id="ropeToggle" class="rope-text-toggle active" onclick="toggleRope()">ON</div>
+                    <div style="display:flex; gap:3px; align-items:center; margin-left:4px;">
+                        <span style="font-size:10px; color:var(--text-s)">样式</span>
+                        <select id="tailStyle" onchange="requestUpdateBook()" style="font-size: 10px; height: 18px; padding: 0 2px; width: 95px; background: transparent;">
+                            <option value="A">简约垂坠 (A)</option>
+                            <option value="B">灵动飘逸 (B)</option>
+                            <option value="C">艺术横扫 (C)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row-grid">
+                <div class="row">
+                    <div class="label-group"><label>绳长</label><span class="val-display" id="v-ropeLen">65</span></div>
+                    <input type="range" id="ropeLen" min="20" max="95" value="65" oninput="updateUIVal(this);requestUpdateBook()">
+                </div>
+                <div class="row">
+                    <div class="label-group"><label>绳粗</label><span class="val-display" id="v-ropeThick">0.03</span></div>
+                    <input type="range" id="ropeThick" min="0.01" max="0.2" step="0.01" value="0.03" oninput="updateUIVal(this);requestUpdateBook()">
+                </div>
+            </div>
+            <div class="row-grid">
+                <div class="row">
+                    <div class="label-group"><label>绳结</label><span class="val-display" id="v-knotPos">8</span></div>
+                    <input type="range" id="knotPos" min="0" max="100" value="8" oninput="updateUIVal(this);requestUpdateBook()">
+                </div>
+                <div class="row">
+                    <div class="label-group"><label>绳尾长度</label><span class="val-display" id="v-tailLen">1.4</span></div>
+                    <input type="range" id="tailLen" min="0.2" max="3.0" step="0.1" value="1.4" oninput="updateUIVal(this);requestUpdateBook()">
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">
+                标签附件 Tags
+                <div style="display:flex; gap:4px; align-items:center; font-weight: 800; font-size: 11px; color: var(--text-s);">
+                    <span id="btnLarge" class="tag-text-btn active" onclick="toggleTag('large')">主标签</span>
+                    <span style="opacity: 0.3;">|</span>
+                    <span id="btnSmall" class="tag-text-btn" onclick="toggleTag('small')">副标签</span>
+                </div>
+            </div>
+            <div id="panelLarge">
+                <div class="row-grid">
+                    <div class="row">
+                        <div class="label-group"><label>宽度</label><span class="val-display" id="v-tagW">42</span></div>
+                        <input type="range" id="tagW" min="20" max="130" value="42" oninput="updateUIVal(this);requestUpdateBook()">
+                    </div>
+                    <div class="row">
+                        <div class="label-group"><label>高度</label><span class="val-display" id="v-tagH">1.8</span></div>
+                        <input type="range" id="tagH" min="0.5" max="2.5" step="0.05" value="1.8" oninput="updateUIVal(this);requestUpdateBook()">
+                    </div>
+                </div>
+                <div class="row-grid">
+                    <div class="row">
+                        <div class="label-group"><label>位置</label><span class="val-display" id="v-tagPos">75</span></div>
+                        <input type="range" id="tagPos" min="0" max="100" value="75" oninput="updateUIVal(this);requestUpdateBook()">
+                    </div>
+                    <div class="row">
+                        <div class="label-group"><label>整体缩放</label><span class="val-display" id="v-tagScale">100%</span></div>
+                        <input type="range" id="tagScale" min="50" max="200" value="100" oninput="updateUIVal(this);requestUpdateBook()">
+                    </div>
+                </div>
+                <!-- 调整后：内容与配色在前 -->
+                <div class="row inline"><label>内容与配色</label>
+                    <div style="display:flex; gap:4px; align-items:center;">
+                        <input type="text" id="tagT_F" value="FRONT" style="width:50px; font-size:10px;" oninput="requestUpdateBook()">
+                        <input type="text" id="tagT_B" value="BACK" style="width:50px; font-size:10px;" oninput="requestUpdateBook()">
+                        <input type="color" id="tagBG" title="背景色" value="#ffffff" oninput="updateColorUI('tagBG', this.value)">
+                        <input type="color" id="tagTC" title="文字色" value="#000000" oninput="updateColorUI('tagTC', this.value)">
+                        <div id="u_tagL"><button class="icon-btn" onclick="openFile('tagSvgL')" title="上传SVG"><svg class="upload-icon"><use href="#icon-up"/></svg></button></div>
+                        <div id="info_tagL" class="upload-info" style="display:none"><span class="upload-name" id="name_tagL"></span><span class="upload-reset" onclick="resetFile('tagL')">×</span></div>
+                        <input type="file" id="tagSvgL" style="display:none" accept=".svg" onchange="handleTagSvgUpload(event, 'large')">
+                        <!-- 字体上传 -->
+                        <div id="u_tagFontL"><button class="icon-btn" onclick="openFile('tagFontInput')" title="自定义字体(TTF/OTF)"><span style="font-size:9px; font-weight:bold;">F</span></button></div>
+                        <input type="file" id="tagFontInput" style="display:none" accept=".ttf,.otf" onchange="handleFontUpload(event)">
+                    </div>
+                </div>
+                <!-- 调整后：文字大小滑块紧跟在后 -->
+                <div class="row">
+                    <div class="label-group"><label id="lbl_tagFontSize_L">文字大小</label><span class="val-display" id="v-tagFontSize">65</span></div>
+                    <input type="range" id="tagFontSize" min="10" max="150" value="65" oninput="updateUIVal(this);requestUpdateBook()">
+                </div>
+            </div>
+            <div id="panelSmall" style="display:none; margin-top:8px; border-top:1px solid var(--border); padding-top:8px;">
+                <div class="row-grid">
+                    <div class="row">
+                        <div class="label-group"><label>宽度</label><span class="val-display" id="v-sTagW">42</span></div>
+                        <input type="range" id="sTagW" min="20" max="130" value="42" oninput="updateUIVal(this);requestUpdateBook()">
+                    </div>
+                    <div class="row">
+                        <div class="label-group"><label>高度</label><span class="val-display" id="v-sTagH">0.7</span></div>
+                        <input type="range" id="sTagH" min="0.3" max="1.5" step="0.1" value="0.7" oninput="requestUpdateBook()">
+                    </div>
+                </div>
+                <div class="row-grid">
+                    <div class="row">
+                        <div class="label-group"><label>位置</label><span class="val-display" id="v-sTagPos">15</span></div>
+                        <input type="range" id="sTagPos" min="0" max="100" value="15" oninput="requestUpdateBook()">
+                    </div>
+                    <div class="row">
+                        <div class="label-group"><label>整体缩放</label><span class="val-display" id="v-sTagScale">100%</span></div>
+                        <input type="range" id="sTagScale" min="50" max="200" value="100" oninput="requestUpdateBook()">
+                    </div>
+                </div>
+                <!-- 调整后：内容与配色在前 -->
+                <div class="row inline"><label>内容与配色</label>
+                    <div style="display:flex; gap:4px; align-items:center;">
+                        <input type="text" id="sTagT_F" value="2026" style="width:60px; font-size:10px;" oninput="requestUpdateBook()">
+                        <input type="text" id="sTagT_B" value="NEW" style="width:60px; font-size:10px;" oninput="requestUpdateBook()">
+                        <input type="color" id="sTagBG" title="背景色" value="#ffffff" oninput="updateColorUI('sTagBG', this.value)">
+                        <input type="color" id="sTagTC" title="文字色" value="#cc0000" oninput="updateColorUI('sTagBG', this.value)">
+                        <div id="u_tagS"><button class="icon-btn" onclick="openFile('tagSvgS')" title="上传SVG"><svg class="upload-icon"><use href="#icon-up"/></svg></button></div>
+                        <div id="info_tagS" class="upload-info" style="display:none"><span class="upload-name" id="name_tagS"></span><span class="upload-reset" onclick="resetFile('tagS')">×</span></div>
+                        <input type="file" id="tagSvgS" style="display:none" accept=".svg" onchange="handleTagSvgUpload(event, 'small')">
+                    </div>
+                </div>
+                <!-- 调整后：文字大小滑块紧跟在后 -->
+                <div class="row">
+                    <div class="label-group"><label id="lbl_sTagFontSize_S">文字大小</label><span class="val-display" id="v-sTagFontSize">34</span></div>
+                    <input type="range" id="sTagFontSize" min="10" max="100" value="34" oninput="requestUpdateBook()">
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">
+                阴影调节 Shadows
+                <select id="shadowMode" onchange="updateShadowSettings()" style="width: 140px; border-color: var(--border); font-weight: normal; text-transform: none;">
+                    <option value="none" selected>无阴影</option>
+                    <option value="ground">地面模式 (Ground)</option>
+                    <option value="top">俯视模式 (Top View)</option>
+                </select>
+            </div>
+            <div class="row" style="margin-top: 4px;">
+                <div class="label-group">
+                    <label>投影亮度</label>
+                    <span class="val-display" id="v-shadowIntensity">15%</span>
+                </div>
+                <input type="range" id="shadowIntensity" min="0" max="100" value="15" oninput="updateUIVal(this); updateShadowOpacity();">
+            </div>
+            <div id="topShadowPosRow" class="row" style="display:none; margin-top: 4px;">
+                <div class="row-grid" style="margin-bottom:0px; gap:8px;">
+                    <div class="row" style="margin-bottom:0px;">
+                        <div class="label-group">
+                            <label>投影深度 (Z-Axis)</label>
+                            <span class="val-display" id="v-topShadowDepth">0.15</span>
+                        </div>
+                        <input type="range" id="topShadowDepth" min="0.01" max="1.0" step="0.01" value="0.15" oninput="updateUIVal(this); window.requestUpdateBook()">
+                    </div>
+                    <div class="row" style="margin-bottom:0px;">
+                        <div class="label-group"><label>投影方向</label></div>
+                        <select id="topShadowDir" onchange="window.updateShadowSettings(); window.requestUpdateBook()" style="height:18px; padding:0; font-size:10px;">
+                            <option value="left" selected>左侧投影 (Left)</option>
+                            <option value="right">右侧投影 (Right)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">背景模式 Background</div>
+            <div class="row inline" style="margin-top: 8px; justify-content: space-between;">
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <div style="display:flex; gap:5px; align-items:center;">
+                        <span style="font-size:10px; color:var(--text-s); font-weight:600;">画布色彩</span>
+                        <input type="hidden" id="bgMode" value="solid">
+                        <input type="color" id="bgC1" value="#e6e6e6" oninput="updateColorUI('bgC1', this.value); updatePageBg()" title="Canvas Color">
+                    </div>
+                    <div style="width:1px; height:18px; background:var(--border); margin:0 2px;"></div>
+                    <div id="u_bgMedia"><button class="btn-upload" onclick="openFile('canvasMediaUpload')"><svg class="upload-icon"><use href="#icon-up"/></svg> 素材上传</button></div>
+                    <div id="info_bgMedia" class="upload-info" style="display:none"><span class="upload-name" id="name_bgMedia"></span><span class="upload-reset" onclick="resetFile('bgMedia')">×</span></div>
+                    <input type="file" id="canvasMediaUpload" style="display:none" accept="image/*,video/*" onchange="handleCanvasMedia(event)">
+                </div>
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <span style="font-size:10px; color:var(--text-s); font-weight:600;">界面色彩</span>
+                    <input type="color" id="themeSyncColor" value="#e6e6e6" oninput="syncThemeColor(this.value)">
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="export-title">导出文件 Export</div>
+            <div class="footer-btns">
+                <button class="btn-primary" onclick="startExport()">DOWNLOAD MP4</button>
+            </div>
+        </div>
+    </aside>
+</div>
+<script type="importmap">{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }</script>
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+    import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
+let scene, camera, renderer, bookGroup, controls, clock, mainLight;
+let frontTex = null, backTex = null, halfCoverTex = null;
+let showLarge = true, showSmall = false, isRotating = true, showRope = true, showHalfCover = false;
+let showShadow = false, showTopShadow = false, groundPlane = null, backPlane = null;
+let globalFiberTex = null, ropeNormalTex = null, tagSvgImg_L = null, tagSvgImg_S = null;
+let textCanvas = document.createElement('canvas'), textTexture = null, bgDirty = true;
+let customFontName = 'monospace'; 
+const UNIT_TO_MM = 25.0;
+const EXPORT_DURATION = 17.44; 
+const EXPORT_LOOPS = 4;        
+const EXPORT_FPS = 30;
+let virtualTime = 0;
+let isExporting = false;
+let needsBookUpdate = false;
+
+window.openFile = (id) => { const el = document.getElementById(id); if(el) el.click(); };
+
+window.handleFontUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const fontFace = new FontFace('CustomTagFont', e.target.result);
+            await fontFace.load();
+            document.fonts.add(fontFace);
+            customFontName = 'CustomTagFont';
+            window.requestUpdateBook();
+        } catch (err) {
+            console.error("Font Load Error:", err);
+            alert("字体加载失败。");
+        }
+    };
+    reader.readAsArrayBuffer(file);
+};
+
+window.updateAllCovers = (val) => {
+document.getElementById('fCoverColor').value = val;
+document.getElementById('bCoverColor').value = val;
+window.requestUpdateBook();
+};
+function setTexSharp(tex) { if(!tex) return; tex.anisotropy = renderer.capabilities.getMaxAnisotropy(); tex.minFilter = THREE.LinearMipmapLinearFilter; tex.magFilter = THREE.LinearFilter; tex.generateMipmaps = true; tex.needsUpdate = true; }
+window.resetFile = (type) => {
+const stopVideo = (tex) => { if(tex && tex.isVideoTexture && tex.image) { tex.image.pause(); tex.image.src = ""; tex.image.load(); } };
+if (type === 'front') { stopVideo(frontTex); frontTex = null; document.getElementById('fCoverImg').value = ''; }
+else if (type === 'back') { stopVideo(backTex); backTex = null; document.getElementById('bCoverImg').value = ''; }
+else if (type === 'hc') { stopVideo(halfCoverTex); halfCoverTex = null; document.getElementById('hcCoverImg').value = ''; }
+else if (type === 'tagL') { tagSvgImg_L = null; document.getElementById('tagSvgL').value = ''; }
+else if (type === 'tagS') { tagSvgImg_S = null; document.getElementById('tagSvgS').value = ''; }
+else if (type === 'bgMedia') { const v = document.getElementById('bgVideoElement'); v.pause(); v.src = ""; v.load(); document.getElementById('canvasMediaUpload').value = ''; window.updatePageBg(); }
+updateUploadUI(type, null); window.requestUpdateBook();
+};
+
+window.toggleRotation = () => {
+    isRotating = !isRotating;
+    const btn = document.getElementById('playPauseBtn');
+    if (isRotating) { 
+        btn.innerText = '❙❙'; 
+        controls.enableRotate = false; 
+    } else { 
+        btn.innerText = '▶'; 
+        controls.enableRotate = true; 
+        // 核心修改 1：点击暂停时复位至正面
+        virtualTime = 0;
+        applyRotationLogic();
+    }
+};
+
+function performHDSnapshot(callback) {
+    const originalSize = new THREE.Vector2();
+    renderer.getSize(originalSize);
+    const originalRatio = camera.aspect;
+    const hdW = 3000, hdH = 4000;
+    renderer.setSize(hdW, hdH, false);
+    camera.aspect = 3/4;
+    camera.updateProjectionMatrix();
+    renderer.render(scene, camera);
+    callback();
+    renderer.setSize(originalSize.x, originalSize.y, false);
+    camera.aspect = originalRatio;
+    camera.updateProjectionMatrix();
+}
+
+window.downloadCanvasImageHD = () => {
+    performHDSnapshot(() => {
+        const link = document.createElement('a');
+        link.download = `BoockupPro_4K_HD_${Date.now()}.png`;
+        link.href = renderer.domElement.toDataURL('image/png', 1.0);
+        link.click();
+    });
+};
+
+window.copyCanvasImageHD = () => {
+    performHDSnapshot(() => {
+        renderer.domElement.toBlob(async (blob) => {
+            const item = new ClipboardItem({ "image/png": blob });
+            await navigator.clipboard.write([item]);
+            alert("4K高清图已复制到剪贴板");
+        }, 'image/png', 1.0);
+    });
+};
+
+// 核心逻辑修改 2：采用实时步进录制，确保旋转速度与进度条 100% 同步
+async function startExport() {
+    if (isExporting) return;
+    isExporting = true;
+
+    const overlay = document.getElementById('progressOverlay');
+    const pBar = document.getElementById('progressBar');
+    const pVal = document.getElementById('progressValue');
+    overlay.style.display = 'flex';
+    controls.enabled = false;
+
+    // 录制关键：强制录制时从 0 开始
+    virtualTime = 0;
+    applyRotationLogic();
+    renderer.render(scene, camera);
+
+    let chunks = [];
+    const stream = renderer.domElement.captureStream(EXPORT_FPS); 
+    let mimeType = 'video/mp4;codecs=avc1.42E01E';
+    if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm;codecs=vp9';
+
+    const recorder = new MediaRecorder(stream, {
+        mimeType: mimeType,
+        videoBitsPerSecond: 60000000 
+    });
+
+    recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: mimeType });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `BoockupPro_Seamless_Sync_${Date.now()}.mp4`;
+        link.click();
+        overlay.style.display = 'none';
+        controls.enabled = true;
+        isExporting = false;
+    };
+
+    recorder.start();
+
+    const totalFrames = Math.floor(EXPORT_DURATION * EXPORT_FPS);
+    const frameDelay = 1000 / EXPORT_FPS; // 每帧真实的物理间隔 (ms)
+    let currentFrame = 0;
+
+    // 使用实时等待确保录制时间轴不会快进
+    async function recordCycle() {
+        if (currentFrame > totalFrames) {
+            recorder.stop();
+            return;
+        }
+
+        // 计算当前帧对应的时间点
+        virtualTime = (currentFrame / totalFrames) * EXPORT_DURATION;
+        
+        applyRotationLogic(); 
+        renderer.render(scene, camera);
+
+        // 更新进度条 UI
+        const progress = currentFrame / totalFrames;
+        pBar.style.width = (progress * 100) + '%';
+        pVal.innerText = Math.floor(progress * 100) + '%';
+
+        currentFrame++;
+        
+        // 核心同步逻辑：等待一帧的时间，让 MediaRecorder 捕捉到正确的时钟频率
+        await new Promise(r => setTimeout(r, frameDelay));
+        requestAnimationFrame(recordCycle);
+    }
+
+    recordCycle();
+}
+window.startExport = startExport;
+
+function applyRotationLogic() {
+    const rotMode = document.getElementById('rotMode').value;
+    const progress = virtualTime / EXPORT_DURATION;
+    const totalRotation = Math.PI * 2 * EXPORT_LOOPS;
+    const currentAngle = progress * totalRotation;
+
+    if (rotMode === 'Y') { 
+        bookGroup.rotation.y = currentAngle; 
+        bookGroup.rotation.z = 0; 
+    } else { 
+        bookGroup.rotation.z = currentAngle; 
+        bookGroup.rotation.y = 0; 
+    }
+
+    const rotSpeedInput = document.getElementById('rotSpeed');
+    const rotSpeedDisp = document.getElementById('v-rotSpeed');
+    
+    // 确保进度条滑块与数值显示实时跟随
+    if (rotSpeedInput) rotSpeedInput.value = (progress * 100).toFixed(2);
+    if (rotSpeedDisp) {
+        rotSpeedDisp.innerText = `${virtualTime.toFixed(2)}s / ${EXPORT_DURATION}s`;
+    }
+}
+
+function animate() {
+requestAnimationFrame(animate);
+if (isRotating && !isExporting) {
+    const delta = clock.getDelta();
+    virtualTime = (virtualTime + delta) % EXPORT_DURATION;
+    applyRotationLogic();
+}
+if (controls) controls.update();
+if (needsBookUpdate) { window.updateBook(); needsBookUpdate = false; }
+drawMarquee();
+if (!isExporting) renderer.render(scene, camera);
+}
+
+window.syncThemeColor = (val) => {
+document.body.style.background = val;
+document.getElementById('bgC1').value = val;
+window.updatePageBg();
+};
+function updateUploadUI(type, filename) {
+const info = document.getElementById(`info_${type}`);
+const btn = document.getElementById(`u_${type}`);
+const name = document.getElementById(`name_${type}`);
+if (filename) { name.innerText = filename; info.style.display = 'flex'; btn.style.display = 'none'; }
+else { info.style.display = 'none'; btn.style.display = 'flex'; }
+}
+function drawBackgroundOnCanvas(ctx) {
+const c1 = document.getElementById('bgC1').value, w = textCanvas.width, h = textCanvas.height;
+ctx.clearRect(0,0,w,h); ctx.fillStyle = c1; ctx.fillRect(0, 0, w, h);
+}
+window.requestUpdateBook = () => { needsBookUpdate = true; };
+window.updateUIVal = (el) => {
+const vId = `v-${el.id}`; const disp = document.getElementById(vId);
+if(disp) {
+if(el.id==='rotSpeed') { if(!isExporting) virtualTime = (parseFloat(el.value)/100) * EXPORT_DURATION; applyRotationLogic(); } 
+else { disp.innerText = (el.type==='range' && el.step < 1) ? el.value : (el.id.includes('Scale')||el.id.includes('Width')||el.id.includes('Height')) ? el.value+'%' : el.value; }
+}
+syncMMDisplays();
+};
+window.updateShadowOpacity = () => { const val = parseFloat(document.getElementById('shadowIntensity').value)/100; if(groundPlane) groundPlane.material.opacity = val; if(backPlane) backPlane.material.opacity = val; };
+window.updateShadowSettings = () => {
+const mode = document.getElementById('shadowMode').value, topDir = document.getElementById('topShadowDir').value;
+showShadow = (mode !== 'none'); showTopShadow = (mode === 'top');
+document.getElementById('topShadowPosRow').style.display = showTopShadow ? 'block' : 'none';
+if(groundPlane) groundPlane.visible = (mode === 'ground');
+if(backPlane) { backPlane.visible = showTopShadow; if(showTopShadow) { mainLight.position.set(topDir === 'left' ? 7 : -7, 6, 12); backPlane.position.x = topDir === 'left' ? -2.5 : 2.5; } else { mainLight.position.set(2, 8, 12); } }
+window.requestUpdateBook();
+};
+window.updateTextureDepthLive = (val) => { const s = val/100; bookGroup.traverse(obj => { if(obj.isMesh && obj.material && obj.material.normalMap && obj.name !== 'paper_core') { obj.material.normalScale.set(s*1.8, s*1.8); } }); };
+window.updateRopeTexture = () => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.fillStyle = '#ffffff'; x.fillRect(0,0,128,128); x.strokeStyle = '#aaaaaa'; x.lineWidth = 4; for(let i=0; i<128; i+=16){ x.beginPath(); x.moveTo(i, 0); x.lineTo(i+64, 128); x.stroke(); } ropeNormalTex = new THREE.CanvasTexture(c); ropeNormalTex.wrapS = ropeNormalTex.wrapT = THREE.RepeatWrapping; setTexSharp(ropeNormalTex); };
+
+window.updateFiberTextures = (params = {}) => {
+    const { len = 35, thick = 2.0, density = 60, noise = 0.18 } = params;
+    const canvasW = 1024;
+    const canvas = document.createElement('canvas'); canvas.width = canvas.height = canvasW;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvasW, canvasW);
+    const count = (density * 500);
+    ctx.globalAlpha = noise;
+    for(let i=0; i < count; i++) { ctx.fillStyle = '#000'; ctx.fillRect(Math.random()*canvasW, Math.random()*canvasW, 1.3, 1.3); }
+    ctx.globalAlpha = 1.0;
+    const diffuse = new THREE.CanvasTexture(canvas); 
+    diffuse.wrapS = diffuse.wrapT = THREE.RepeatWrapping;
+    const nCanvas = document.createElement('canvas'); nCanvas.width = nCanvas.height = canvasW;
+    const nCtx = nCanvas.getContext('2d'); nCtx.fillStyle = 'rgb(128, 128, 255)'; nCtx.fillRect(0, 0, canvasW, canvasW);
+    for(let i=0; i < count * 0.8; i++) {
+        const x = Math.random() * canvasW, y = Math.random() * canvasW, a = Math.random() * Math.PI * 2, l = Math.random() * len + 4;
+        const nx = 128 + (Math.random()-0.5)*80, ny = 128 + (Math.random()-0.5)*80;
+        nCtx.beginPath(); nCtx.strokeStyle = `rgb(${nx}, ${ny}, 255)`; nCtx.lineWidth = Math.random() * thick + 0.4;
+        nCtx.moveTo(x, y); nCtx.lineTo(x + Math.cos(a)*l, y + Math.sin(a)*l); nCtx.stroke();
+    }
+    const normal = new THREE.CanvasTexture(nCanvas); 
+    normal.wrapS = normal.wrapT = THREE.RepeatWrapping;
+    setTexSharp(diffuse); setTexSharp(normal);
+    globalFiberTex = { diffuse, normal };
+};
+
+window.updateColorUI = (id, val) => { const picker = document.getElementById(id); if (picker && picker.value !== val) picker.value = val; window.requestUpdateBook(); };
+window.toggleTag = (type) => { if(type === 'large') { showLarge = !showLarge; document.getElementById('btnLarge').classList.toggle('active', showLarge); document.getElementById('panelLarge').style.display = showLarge ? 'block' : 'none'; } else { showSmall = !showSmall; document.getElementById('btnSmall').classList.toggle('active', showSmall); document.getElementById('panelSmall').style.display = showSmall ? 'block' : 'none'; } window.requestUpdateBook(); };
+window.toggleHalfCover = () => { showHalfCover = !showHalfCover; document.getElementById('btnHalfCover').classList.toggle('active', showHalfCover); document.getElementById('halfCoverPanel').style.display = showHalfCover ? 'block' : 'none'; window.requestUpdateBook(); };
+window.handleHalfCoverUpload = (event) => { const file = event.target.files[0]; if (!file) return; const url = URL.createObjectURL(file); updateUploadUI('hc', file.name); if(file.type.startsWith('video/')){ const v = document.createElement('video'); v.src = url; v.loop = true; v.muted = true; v.oncanplaythrough = () => { v.play(); const tex = new THREE.VideoTexture(v); tex.colorSpace = THREE.SRGBColorSpace; tex.flipY = false; setTexSharp(tex); halfCoverTex = tex; window.requestUpdateBook(); }; } else { new THREE.TextureLoader().load(url, (tex) => { tex.colorSpace = THREE.SRGBColorSpace; tex.flipY = false; setTexSharp(tex); halfCoverTex = tex; window.requestUpdateBook(); }); } };
+window.handleTagSvgUpload = (event, type) => { const file = event.target.files[0]; if (!file) return; const url = URL.createObjectURL(file); updateUploadUI(type==='large'?'tagL':'tagS', file.name); const img = new Image(); img.onload = () => { if(type === 'large') tagSvgImg_L = img; else tagSvgImg_S = img; window.requestUpdateBook(); }; img.src = url; };
+window.handleImageUpload = (event, type) => { const file = event.target.files[0]; if (!file) return; const url = URL.createObjectURL(file); updateUploadUI(type, file.name); if(file.type.startsWith('video/')){ const v = document.createElement('video'); v.src = url; v.loop = true; v.muted = true; v.oncanplaythrough = () => { v.play(); const tex = new THREE.VideoTexture(v); tex.colorSpace = THREE.SRGBColorSpace; tex.flipY = false; setTexSharp(tex); if (type === 'front') frontTex = tex; else backTex = tex; window.requestUpdateBook(); }; } else { new THREE.TextureLoader().load(url, (tex) => { tex.colorSpace = THREE.SRGBColorSpace; tex.flipY = false; setTexSharp(tex); if (type === 'front') frontTex = tex; else backTex = tex; window.requestUpdateBook(); }); } };
+window.handleCanvasMedia = (event) => { const file = event.target.files[0]; if (!file) return; const url = URL.createObjectURL(file); updateUploadUI('bgMedia', file.name); if (file.type.startsWith('video/')) { const v = document.getElementById('bgVideoElement'); v.src = url; v.oncanplaythrough = () => { v.play(); const tex = new THREE.VideoTexture(v); tex.colorSpace = THREE.SRGBColorSpace; scene.background = tex; }; } else { new THREE.TextureLoader().load(url, (tex) => { tex.colorSpace = THREE.SRGBColorSpace; renderer.initTexture(tex); scene.background = tex; }); } };
+window.updatePageBg = () => { bgDirty = true; if (!textTexture) { textCanvas.width = 1440; textCanvas.height = 1920; textTexture = new THREE.CanvasTexture(textCanvas); textTexture.colorSpace = THREE.SRGBColorSpace; } const mediaInput = document.getElementById('canvasMediaUpload'); if (mediaInput.files && mediaInput.files.length > 0) return; scene.background = textTexture; };
+function drawMarquee() { if (!bgDirty) return; const ctx = textCanvas.getContext('2d'); drawBackgroundOnCanvas(ctx); if (textTexture) textTexture.needsUpdate = true; bgDirty = false; }
+function init() {
+const container = document.getElementById('canvas-container');
+scene = new THREE.Scene(); clock = new THREE.Clock(); camera = new THREE.PerspectiveCamera(22, 3/4, 0.1, 1000); camera.position.set(0, 0, 28);
+renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true, preserveDrawingBuffer: true });
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.setSize(container.clientWidth, container.clientHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+container.appendChild(renderer.domElement); const pmrem = new THREE.PMREMGenerator(renderer); scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.1).texture;
+mainLight = new THREE.DirectionalLight(0xffffff, 1.6);
+mainLight.position.set(2, 8, 12); mainLight.castShadow = true; mainLight.shadow.mapSize.set(2048, 2048);
+scene.add(mainLight); scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+controls = new OrbitControls(camera, renderer.domElement); controls.enableRotate = false; controls.enableDamping = true;
+bookGroup = new THREE.Group(); scene.add(bookGroup);
+groundPlane = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.ShadowMaterial({ opacity: 0.15, transparent: true })); groundPlane.rotation.x = -Math.PI / 2; groundPlane.receiveShadow = true; groundPlane.visible = false; scene.add(groundPlane);
+backPlane = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.ShadowMaterial({ opacity: 0.15, transparent: true })); backPlane.receiveShadow = true; backPlane.visible = false; scene.add(backPlane);
+window.updateRopeTexture(); window.updateFiberTextures(); window.updatePageBg(); window.updateBook(); syncMMDisplays(); animate(); setupContextMenu();
+window.addEventListener('resize', () => { renderer.setSize(container.clientWidth, container.clientHeight); camera.aspect = 3/4; camera.updateProjectionMatrix(); });
+}
+window.applyTakeoPreset = () => {
+const val = document.getElementById('takeoPreset').value, config = { 'bordeaux': { strength: 340, color: '#7c2d3b', fiber: { len: 8, thick: 6, density: 95, noise: 0.35 } }, 'peacock': { strength: 380, color: '#289ba8', fiber: { len: 5, thick: 2.2, density: 80, noise: 0.2 } }, 'ecru': { strength: 220, color: '#d8d2bc', fiber: { len: 75, thick: 1.2, density: 70, noise: 0.15 } }, 'nt_raschel': { strength: 160, color: '#e6e3d8', fiber: { len: 15, thick: 3.8, density: 75, noise: 0.12 } }, 'tant': { strength: 420, color: '#f3f0e8', fiber: { len: 6, thick: 1.8, density: 30, noise: 0.05 } }, 'pachica': { strength: 95, color: '#ffffff', fiber: { len: 3, thick: 1, density: 98, noise: 0.02 } }, 'mermaid': { strength: 480, color: '#e0e5e8', fiber: { len: 20, thick: 5, density: 40, noise: 0.28 } }, 'satogami': { strength: 280, color: '#d9d2c5', fiber: { len: 35, thick: 1.5, density: 85, noise: 0.22 } }, 're_feel': { strength: 520, color: '#4a403a', fiber: { len: 6, thick: 8, density: 15, noise: 0.45 } }, 'custom': { strength: 40, color: '#ffffff', fiber: {} } };
+if (config[val]) { const c = config[val]; document.getElementById('texStrength').value = c.strength; updateColorUI('fCoverColor', c.color); updateColorUI('bCoverColor', c.color); document.getElementById('v-texStrength').innerText = c.strength; window.updateFiberTextures(c.fiber); window.requestUpdateBook(); }
+};
+window.setSliderFromMM = (id, mmVal) => { const slider = document.getElementById(id); let newVal = mmVal / UNIT_TO_MM; if (id === 'hcWidth') newVal = (mmVal / (parseFloat(document.getElementById('bookWidth').value)*UNIT_TO_MM)) * 100; if (id === 'hcHeight') newVal = (mmVal / (parseFloat(document.getElementById('bookLen').value)*UNIT_TO_MM)) * 100; slider.value = newVal; window.updateUIVal(slider); window.requestUpdateBook(); };
+window.syncMMDisplays = () => { const upd = (sId, mId) => { const val = parseFloat(document.getElementById(sId).value), input = document.getElementById(mId); if(input) input.value = (val * UNIT_TO_MM).toFixed(1); }; upd('bookLen', 'mm_bookLen'); upd('bookWidth', 'mm_bookWidth'); upd('bookThick', 'mm_bookThick'); upd('bookSlope', 'mm_bookSlope'); const bW = parseFloat(document.getElementById('bookWidth').value), bL = parseFloat(document.getElementById('bookLen').value); const hcW = document.getElementById('mm_hcWidth'); if(hcW) hcW.value = ((parseFloat(document.getElementById('hcWidth').value)/100) * bW * UNIT_TO_MM).toFixed(1); const hcH = document.getElementById('mm_hcHeight'); if(hcH) hcH.value = ((parseFloat(document.getElementById('hcHeight').value)/100) * bL * UNIT_TO_MM).toFixed(1); };
+function createCombinedTagCanvas(w, h, tF, tB, bg, tc, fS, svg) {
+    const res = 300, sW = w*res, H = h*res, W = sW*2, cvs = document.createElement('canvas'); cvs.width = W; cvs.height = H;
+    const ctx = cvs.getContext('2d'); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    const dr = (txt, off, isB) => {
+        ctx.save(); ctx.translate(off+sW/2, H/2); if (isB) ctx.rotate(Math.PI/2); else ctx.rotate(-Math.PI/2);
+        if (svg) { const sc = (fS/100)*8.0, iW = svg.width, iH = svg.height, asp = iW/iH; let dW = (Math.min(sW,H))*sc, dH = dW/asp; ctx.drawImage(svg, -dW/2, -dH/2, dW, dH); } 
+        else { ctx.fillStyle = tc; ctx.font = `bold ${fS*1.2}px ${customFontName}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(txt, 0, 0); }
+        ctx.restore();
+    };
+    dr(tF, 0, false); dr(tB, sW, true);
+    const tex = new THREE.CanvasTexture(cvs); tex.colorSpace = THREE.SRGBColorSpace; setTexSharp(tex); return tex;
+}
+function createTagMesh(w, l, tF, tB, bG, tC, sT, fS, svg) { const t = 0.008, r = sT/2+0.001+t/2, totW = w*2 + Math.PI*r, geo = new THREE.BoxGeometry(totW, l, t, 80, 1, 1); const atl = createCombinedTagCanvas(w, l, tF, tB, bG, tC, fS, svg), pos = geo.attributes.position, uv = geo.attributes.uv; for (let i = 0; i < pos.count; i++) { let x = pos.getX(i), z = pos.getZ(i), nX = x+totW/2; if (nX <= w) { pos.setX(i, nX); pos.setZ(i, r+(z>0?t/2:-t/2)); uv.setXY(i, (nX/w)*0.5, pos.getY(i)/l+0.5); } else if (nX <= (w+Math.PI*r)) { let a = ((nX-w)/(Math.PI*r))*Math.PI, cr = r+(z>0?t/2:-t/2); pos.setX(i, w+Math.sin(a)*cr); pos.setZ(i, Math.cos(a)*cr); uv.setXY(i, 0.5, pos.getY(i)/l+0.5); } else { let bd = nX-w-Math.PI*r; pos.setX(i, w-bd); pos.setZ(i, -r+(z>0?-t/2:t/2)); uv.setXY(i, 0.5+(bd/w)*0.5, pos.getY(i)/l+0.5); } } geo.translate(-w, 0, 0); geo.computeVertexNormals(); const mA = new THREE.MeshStandardMaterial({ map: atl, roughness: 0.5, side: THREE.DoubleSide, dithering: true }); return new THREE.Mesh(geo, [mA, mA, mA, mA, mA, mA]); }
+window.toggleRope = () => { showRope = !showRope; const btn = document.getElementById('ropeToggle'); btn.innerText = showRope ? 'ON' : 'OFF'; btn.classList.toggle('active', showRope); window.requestUpdateBook(); };
+function setupContextMenu() { const menu = document.getElementById('ctx-menu'), container = document.getElementById('canvas-container'); container.oncontextmenu = (e) => { e.preventDefault(); menu.style.display = 'block'; menu.style.left = e.pageX + 'px'; menu.style.top = e.pageY + 'px'; }; window.onclick = () => menu.style.display = 'none'; }
+let cachedPaperTex = null, lastCoreParams = "";
+window.updateBook = function() {
+const mainTarget = bookGroup; if(!mainTarget) return;
+const savedRotY = mainTarget.rotation.y, savedRotZ = mainTarget.rotation.z, tempGroup = new THREE.Group();
+const bh = parseFloat(document.getElementById('bookLen').value), bw = parseFloat(document.getElementById('bookWidth').value), bThick = parseFloat(document.getElementById('bookThick').value) / 2, slope = parseFloat(document.getElementById('bookSlope').value) || 0;
+if(groundPlane) groundPlane.position.y = -bh/2 - 0.005; if(backPlane) { const shadowUserOffset = parseFloat(document.getElementById('topShadowDepth').value); backPlane.position.z = -bThick - shadowUserOffset; }
+const sThick = parseFloat(document.getElementById('ropeThick').value), cColor = document.getElementById('coreColor').value, rColor = document.getElementById('ropeColor').value, texS = document.getElementById('texStrength').value/100, spineR = 0.22, globalOffset = -(bw-spineR)/2, midX = -spineR*0.95, curveP = 64;
+const { diffuse: pFD, normal: pFN } = globalFiberTex;
+const createMat = (isFront, tex) => { const colorVal = isFront ? document.getElementById('fCoverColor').value : document.getElementById('bCoverColor').value; const isUserImg = (tex && tex !== pFD); return new THREE.MeshStandardMaterial({ color: isUserImg ? '#ffffff' : colorVal, map: tex || pFD, normalMap: pFN, normalScale: new THREE.Vector2(texS * 1.8, texS * 1.8), roughness: 1.0, envMapIntensity: 0, polygonOffset: true, polygonOffsetFactor: -4, dithering: true }); };
+if (!cachedPaperTex || lastCoreParams !== cColor) { const pCanvas = document.createElement('canvas'); pCanvas.width = 2048; pCanvas.height = 1024; const pCtx = pCanvas.getContext('2d'); pCtx.fillStyle = '#f2f2f2'; pCtx.fillRect(0,0,2048,1024); let currentX = 0; while(currentX < 2048) { const step = 3.2 + Math.random() * 2.8, alpha = 0.15 + Math.random() * 0.15; pCtx.fillStyle = `rgba(0,0,0,${alpha})`; pCtx.fillRect(currentX, 0, 1.2, 1024); currentX += step; } cachedPaperTex = new THREE.CanvasTexture(pCanvas); cachedPaperTex.wrapS = cachedPaperTex.wrapT = THREE.RepeatWrapping; cachedPaperTex.colorSpace = THREE.SRGBColorSpace; lastCoreParams = cColor; }
+const mouthX = bw - slope, paperShape = new THREE.Shape().moveTo(mouthX, bThick).lineTo(0.12, bThick).bezierCurveTo(-spineR + 0.05, bThick, -spineR + 0.05, -bThick, 0.12, -bThick).lineTo(bw, -bThick).lineTo(mouthX, bThick);
+const paperGeo = new THREE.ExtrudeGeometry(paperShape, { depth: bh, bevelEnabled: false, curveSegments: 128 }); paperGeo.translate(globalOffset, 0, -bh/2); paperGeo.rotateX(Math.PI/2);
+const paperMesh = new THREE.Mesh(paperGeo, new THREE.MeshStandardMaterial({ map: cachedPaperTex, color: cColor, roughness: 1.0, name: 'paper_core', dithering: true })); paperMesh.castShadow = true; paperMesh.receiveShadow = true; tempGroup.add(paperMesh);
+const t = 0.006, overlap = 0.01;
+const cFS = new THREE.Shape().moveTo(midX,0).bezierCurveTo(midX+0.01,bThick,0.05,bThick,0.1+overlap,bThick).lineTo(mouthX,bThick).lineTo(mouthX,bThick-t).lineTo(0.1+overlap,bThick-t).bezierCurveTo(0.05,bThick-t,midX+0.01,0,midX,0).closePath();
+const cBS = new THREE.Shape().moveTo(midX,0).bezierCurveTo(midX+0.01,-bThick,0.05,-bThick,0.1+overlap,-bThick).lineTo(bw,-bThick).lineTo(bw,-bThick+t).lineTo(0.1+overlap,-bThick+t).bezierCurveTo(0.05,-bThick+t,midX+0.01,0,midX,0).closePath();
+const renderPart = (sh, tex, isFront) => {
+const geo = new THREE.ExtrudeGeometry(sh, { depth: bh, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.003, curveSegments: curveP });
+const pos = geo.attributes.position, uvs = geo.attributes.uv, curMidX = midX, maxX = isFront ? mouthX : bw, totalW = Math.abs(maxX - curMidX);
+for(let i=0; i<pos.count; i++) { let u = Math.abs(pos.getX(i)-curMidX)/totalW; if (!isFront) u = 1-u; uvs.setXY(i, u, pos.getZ(i)/bh); }
+if (tex && tex.image) { tex.matrixAutoUpdate = false; const cAsp = totalW/bh; let iW = tex.isVideoTexture?tex.image.videoWidth:tex.image.width, iH = tex.isVideoTexture?tex.image.videoHeight:tex.image.height; const iAsp = (iW||1)/(iH||1); let sx=1, sy=1, tx=0, ty=0; if (iAsp > cAsp) { sx=cAsp/iAsp; tx=(1-sx)/2; } else { sy=iAsp/cAsp; ty=(1-sy)/2; } tex.matrix.setUvTransform(tx, ty, sx, sy, 0, 0, 0); }
+geo.translate(globalOffset, 0, -bh/2); geo.rotateX(Math.PI/2); const mesh = new THREE.Mesh(geo, createMat(isFront, tex)); mesh.castShadow = true; tempGroup.add(mesh);
+};
+renderPart(cFS, frontTex, true); renderPart(cBS, backTex, false);
+if (showHalfCover) {
+const hcH = bh * (parseFloat(document.getElementById('hcHeight').value) / 100), hcA = document.getElementById('hcAlign').value, hcW = bw * (parseFloat(document.getElementById('hcWidth').value) / 100), hcG = 0.01, hcT = 0.025; let vS = 0; if (hcA === 'top') vS = (bh - hcH) / 2; else if (hcA === 'bottom') vS = -(bh - hcH) / 2;
+const hcS = new THREE.Shape().moveTo(midX, 0).bezierCurveTo(midX + 0.01, bThick + hcG, 0.05, bThick + hcG, 0.1 + overlap, bThick + hcG).lineTo(0.1 + hcW, bThick + hcG).lineTo(0.1 + hcW, bThick + hcG - hcT).lineTo(0.1 + overlap, bThick + hcG - hcT).bezierCurveTo(0.05, bThick + hcG - hcT, midX + 0.01, 0, midX, 0).closePath();
+const hcGeo = new THREE.ExtrudeGeometry(hcS, { depth: hcH, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.006, curveSegments: curveP });
+const pos = hcGeo.attributes.position, uvs = hcGeo.attributes.uv, hcBW = 0.1 + hcW - midX; for(let i = 0; i < pos.count; i++) uvs.setXY(i, (pos.getX(i) - midX) / hcBW, pos.getZ(i) / hcH);
+hcGeo.translate(0, 0, -hcH / 2); hcGeo.rotateX(Math.PI / 2); hcGeo.translate(globalOffset, vS, 0);
+const hcMesh = new THREE.Mesh(hcGeo, createMat(true, halfCoverTex)); if (!halfCoverTex) hcMesh.material.color.set(document.getElementById('hcColor').value); hcMesh.castShadow = true; tempGroup.add(hcMesh);
+}
+if (showRope) {
+const rLP = document.getElementById('ropeLen').value/100, rY = (bh*rLP)/2, cR = 0.08, rM = new THREE.MeshStandardMaterial({ color: rColor, roughness: 0.7, normalMap: ropeNormalTex, normalScale: new THREE.Vector2(4,4), dithering: true }), rEX = globalOffset-spineR*0.85, rX = (midX+globalOffset-sThick/2), path = new THREE.CurvePath(); path.add(new THREE.LineCurve3(new THREE.Vector3(rEX, rY, 0), new THREE.Vector3(rX+cR, rY, 0))); path.add(new THREE.QuadraticBezierCurve3(new THREE.Vector3(rX+cR, rY, 0), new THREE.Vector3(rX, rY, 0), new THREE.Vector3(rX, rY-cR, 0))); path.add(new THREE.LineCurve3(new THREE.Vector3(rX, rY-cR, 0), new THREE.Vector3(rX, -rY+cR, 0))); path.add(new THREE.QuadraticBezierCurve3(new THREE.Vector3(rX, -rY+cR, 0), new THREE.Vector3(rX, -rY, 0), new THREE.Vector3(rX+cR, -rY, 0))); path.add(new THREE.LineCurve3(new THREE.Vector3(rX+cR, -rY, 0), new THREE.Vector3(rEX, -rY, 0)));
+const rMesh = new THREE.Mesh(new THREE.TubeGeometry(path, 64, sThick/2, 12, false), rM); rMesh.castShadow = true; tempGroup.add(rMesh);
+if(showLarge) { const sc = parseFloat(document.getElementById('tagScale').value)/100, tW = (parseFloat(document.getElementById('tagW').value)/100)*sc, tH = parseFloat(document.getElementById('tagH').value)*sc, ty = (-rY+cR+tH/2) + ((rY*2-cR*2)-tH) * parseFloat(document.getElementById('tagPos').value)/100; const tag = createTagMesh(tW, tH, document.getElementById('tagT_F').value, document.getElementById('tagT_B').value, document.getElementById('tagBG').value, document.getElementById('tagTC').value, sThick, parseFloat(document.getElementById('tagFontSize').value), tagSvgImg_L); tag.position.set(rX, ty, 0); tag.castShadow = true; tempGroup.add(tag); }
+if(showSmall) { const sc = parseFloat(document.getElementById('sTagScale').value)/100, sW = (parseFloat(document.getElementById('sTagW').value)/100)*sc, sH = parseFloat(document.getElementById('sTagH').value)*sc, ty = (-rY+cR+sH/2) + ((rY*2-cR*2)-sH) * parseFloat(document.getElementById('sTagPos').value)/100; const tag = createTagMesh(sW, sH, document.getElementById('sTagT_F').value, document.getElementById('sTagT_B').value, document.getElementById('sTagBG').value, document.getElementById('sTagTC').value, sThick, parseFloat(document.getElementById('sTagFontSize').value), tagSvgImg_S); tag.position.set(rX, ty, 0); tag.castShadow = true; tempGroup.add(tag); }
+const knotY = -rY+cR + (rY*2-cR*2)*(1.0-document.getElementById('knotPos').value/100), tailL = parseFloat(document.getElementById('tailLen').value), knot = new THREE.Mesh(new THREE.CapsuleGeometry(sThick/2.1, sThick/2.1, 6, 8), rM); knot.position.set(rX, knotY, 0); knot.rotation.z = Math.PI/2.5; knot.castShadow = true; tempGroup.add(knot);
+const genTail = (isL, l) => { const p0 = new THREE.Vector3(rX, knotY, 0); let style = document.getElementById('tailStyle').value, cur; if(style==='A') cur = new THREE.CubicBezierCurve3(p0, new THREE.Vector3(rX-0.15, knotY+0.05, 0.05), new THREE.Vector3(rX-0.35, knotY-0.1, 0.1), new THREE.Vector3(rX + (isL?-0.5:-0.3), knotY - l, 0.12)); else if(style==='B') cur = new THREE.CubicBezierCurve3(p0, isL ? new THREE.Vector3(rX-0.6, knotY+0.6, 0.05) : new THREE.Vector3(rX-0.5, knotY+0.2, 0.05), isL ? new THREE.Vector3(rX-1.6, knotY+0.2, 0.1) : new THREE.Vector3(rX-1.2, knotY-0.4, 0.1), isL ? new THREE.Vector3(rX-1.8, knotY - l*0.8, 0.15) : new THREE.Vector3(rX-1.5, knotY - l*1.2, 0.12)); else cur = new THREE.CubicBezierCurve3(p0, new THREE.Vector3(rX-0.5, knotY+(isL?0.2:-0.1), 0.05), new THREE.Vector3(rX-0.8, knotY-(isL?0.5:0.2), 0.1), new THREE.Vector3(rX-1.1, knotY-(isL?l*1.1:l*0.45), 0.15)); const tM = new THREE.Mesh(new THREE.TubeGeometry(cur, 32, sThick/2.1, 8, false), rM); tM.castShadow = true; tempGroup.add(tM); }; genTail(true, tailL); genTail(false, tailL * 0.6);
+}
+while(mainTarget.children.length > 0) { const obj = mainTarget.children[0]; if(obj.geometry) obj.geometry.dispose(); if(obj.material) { if(Array.isArray(obj.material)) obj.material.forEach(m=>m.dispose()); else obj.material.dispose(); } mainTarget.remove(obj); }
+while(tempGroup.children.length > 0) mainTarget.add(tempGroup.children[0]);
+mainTarget.rotation.y = savedRotY; mainTarget.rotation.z = savedRotZ;
+};
+init();
+</script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
